@@ -12,12 +12,14 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 app.use(
   cors({
     origin: [
-      "https://bistro-boss-restaurant-server-side-theta.vercel.app/",
-      "https://bistro-boss-cc89c.web.app/",
+      "https://bistro-boss-restaurant-server-side-theta.vercel.app",
+      "https://bistro-boss-cc89c.web.app",
       "http://localhost:5173",
     ],
+    credentials: true,
   })
 );
+
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.vlz3r.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
