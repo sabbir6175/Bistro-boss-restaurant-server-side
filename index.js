@@ -6,12 +6,18 @@ const jwt = require("jsonwebtoken");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const port = process.env.PORT || 5000;
 
-
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
-
 //middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://bistro-boss-restaurant-server-side-theta.vercel.app/",
+      "https://bistro-boss-cc89c.web.app/",
+      "http://localhost:5173",
+    ],
+  })
+);
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.vlz3r.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -286,7 +292,6 @@ async function run() {
       //   </div>
       // `,
       // };
-   
 
       res.send({ paymentResult, deleteResult });
     });
