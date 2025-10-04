@@ -5,7 +5,10 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const port = process.env.PORT || 5000;
+
+
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+
 
 //middleware
 app.use(cors());
@@ -233,6 +236,58 @@ async function run() {
       };
       const deleteResult = await cartsCollection.deleteMany(query);
 
+      //send email receipt
+
+      // const emailData = {
+      //   from: "Your Shop <no-reply@yourdomain.com>",
+      //   to: payment.email,
+      //   subject: "✅ Payment Receipt - Order Successful",
+      //   html: `
+      //   <div style="font-family: Arial, sans-serif; max-width: 600px; margin:auto; border:1px solid #ddd; padding:20px; border-radius:10px;">
+      //     <h2 style="color: #2d89ef; text-align:center;">🎉 Payment Successful!</h2>
+      //     <p>Hello,</p>
+      //     <p>We are happy to inform you that your payment has been received successfully. Below are your payment details:</p>
+
+      //     <table style="width:100%; border-collapse: collapse; margin: 15px 0;">
+      //       <tr>
+      //         <td style="padding:8px; border:1px solid #ddd;">💳 Transaction ID</td>
+      //         <td style="padding:8px; border:1px solid #ddd;">${
+      //           payment.transactionId
+      //         }</td>
+      //       </tr>
+      //       <tr>
+      //         <td style="padding:8px; border:1px solid #ddd;">💰 Amount Paid</td>
+      //         <td style="padding:8px; border:1px solid #ddd;">$${
+      //           payment.price
+      //         }</td>
+      //       </tr>
+      //       <tr>
+      //         <td style="padding:8px; border:1px solid #ddd;">📅 Date</td>
+      //         <td style="padding:8px; border:1px solid #ddd;">${new Date(
+      //           payment.date
+      //         ).toLocaleString()}</td>
+      //       </tr>
+      //       <tr>
+      //         <td style="padding:8px; border:1px solid #ddd;">🛒 Categories</td>
+      //         <td style="padding:8px; border:1px solid #ddd;">${payment.categories.join(
+      //           ", "
+      //         )}</td>
+      //       </tr>
+      //     </table>
+
+      //     <p style="color: green; font-size:16px; font-weight:bold; text-align:center; margin-top:20px;">
+      //       ✅ Your payment has been processed successfully. Thank you for your order!
+      //     </p>
+
+      //     <p style="font-size:14px; color:#555; text-align:center; margin-top:20px;">
+      //       If you have any questions, please contact our support team.<br/>
+      //       <b>— Your Shop Team</b>
+      //     </p>
+      //   </div>
+      // `,
+      // };
+   
+
       res.send({ paymentResult, deleteResult });
     });
 
@@ -325,18 +380,18 @@ async function run() {
             {
               $group: {
                 _id: "$menuItems.category",
-                quantity: { $sum: 1},
-                revenue: {$sum: '$menuItems.price'}
-              }
+                quantity: { $sum: 1 },
+                revenue: { $sum: "$menuItems.price" },
+              },
             },
             {
-              $project : {
+              $project: {
                 _id: 0,
-                category: '$_id',
-                quantity: '$quantity',
-                revenue: '$revenue'
-              }
-            }
+                category: "$_id",
+                quantity: "$quantity",
+                revenue: "$revenue",
+              },
+            },
           ])
           .toArray();
 
